@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="shortcut icon" href="https://www.youtube.com/s/desktop/45b1dc52/img/favicon.ico" type="image/x-icon">
+<title>مشغل يوتيوب للأجهزة الضعيفة</title>
+
+<style>
+body{
+  font-family: Arial, Tahoma, sans-serif;
+  background: #f2f2f2;
+  margin: 0;
+  padding: 0;
+  direction: rtl;
+  text-align: center;
+  color: #222;
+}
+
+h1{
+  font-size: 20px;
+  margin: 20px 10px;
+  color: #111;
+}
+
+p{
+  font-size: 14px;
+  margin: 10px 15px;
+  line-height: 1.6;
+}
+
+.box{
+  background: #fff;
+  width: 92%;
+  max-width: 450px;
+  margin: 15px auto;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+input{
+  width: 90%;
+  max-width: 400px;
+  padding: 10px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  text-align: left;
+  direction: ltr;
+}
+
+button{
+  width: 85%;
+  max-width: 350px;
+  margin: 12px auto;
+  padding: 12px 10px;
+  font-size: 16px;
+  border: 1px solid #000;
+  border-radius: 5px;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+  display: block;
+}
+
+button:active{
+  opacity: 0.7;
+}
+
+hr{
+  border: 0;
+  height: 1px;
+  background: #ccc;
+  margin: 15px 0;
+}
+
+a{
+  display: block;
+  width: 85%;
+  max-width: 350px;
+  margin: 10px auto;
+  padding: 12px 10px;
+  text-decoration: none;
+  font-size: 15px;
+  color: #fff;
+  border-radius: 5px;
+  border: 1px solid #000;
+}
+
+a:active{
+  opacity: 0.7;
+}
+
+.btn1{ background: #007bff; border-color: #0056b3; }
+.btn2{ background: #28a745; border-color: #1e7e34; }
+.btn3{ background: #ff9800; border-color: #cc7a00; }
+.btn4{ background: #e91e63; border-color: #b0003a; }
+.btn5{ background: #444; border-color: #222; }
+
+.videoBox{
+  width: 92%;
+  max-width: 450px;
+  margin: 15px auto;
+  background: #fff;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+iframe{
+  width: 100%;
+  height: 240px;
+  border: 0;
+}
+
+.note{
+  font-size: 13px;
+  color: #555;
+  margin-top: 10px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>مشغل يوتيوب للأجهزة الضعيفة</h1>
+
+<div class="box">
+  <p>ضع رابط فيديو يوتيوب هنا:</p>
+
+  <input id="ytLink" type="text" placeholder="مثال: https://youtu.be/xxxx" />
+
+  <button onclick="generateLinks()">عرض طرق التشغيل</button>
+
+  <p class="note">
+    يعمل على Android 4 والمتصفحات القديمة قدر الإمكان.
+  </p>
+</div>
+
+<div id="result" style="display:none;">
+
+  <div class="box">
+    <p><b>تم استخراج ID الفيديو:</b></p>
+    <p id="videoIdText" style="direction:ltr;text-align:center;"></p>
+    <hr>
+
+    <p><b>طرق تشغيل مختلفة:</b></p>
+
+    <a id="link1" class="btn1" target="_blank">فتح يوتيوب العادي</a>
+    <a id="link2" class="btn2" target="_blank">فتح نسخة خفيفة (m.youtube)</a>
+    <a id="link3" class="btn3" target="_blank">فتح نسخة خفيفة جدًا (HTTP)</a>
+    <a id="link4" class="btn4" target="_blank">فتح مشغل Embed</a>
+    <a id="link5" class="btn5" target="_blank">فتح في تطبيق يوتيوب (إن وجد)</a>
+
+    <p class="note">
+      لو جهازك ضعيف جدًا: جرب زر "m.youtube" أولاً.
+    </p>
+  </div>
+
+  <div class="videoBox">
+    <p><b>تشغيل داخل الصفحة (iframe):</b></p>
+    <iframe id="playerFrame" src=""></iframe>
+
+    <p class="note">
+      لو الفيديو لم يعمل داخل الصفحة، استخدم الأزرار فوق.
+    </p>
+  </div>
+
+</div>
+
+
+<script>
+
+function extractVideoID(url){
+  if(!url){ return ""; }
+
+  url = url.replace(/^\s+|\s+$/g, "");
+
+
+  if(url.length == 11 && url.indexOf("http") == -1){
+    return url;
+  }
+
+
+  if(url.indexOf("youtu.be/") != -1){
+    var parts = url.split("youtu.be/");
+    if(parts[1]){
+      var id = parts[1];
+      if(id.indexOf("?") != -1) id = id.split("?")[0];
+      if(id.indexOf("&") != -1) id = id.split("&")[0];
+      return id;
+    }
+  }
+
+
+  if(url.indexOf("watch?v=") != -1){
+    var parts2 = url.split("watch?v=");
+    if(parts2[1]){
+      var id2 = parts2[1];
+      if(id2.indexOf("&") != -1) id2 = id2.split("&")[0];
+      if(id2.indexOf("?") != -1) id2 = id2.split("?")[0];
+      return id2;
+    }
+  }
+
+
+  if(url.indexOf("embed/") != -1){
+    var parts3 = url.split("embed/");
+    if(parts3[1]){
+      var id3 = parts3[1];
+      if(id3.indexOf("?") != -1) id3 = id3.split("?")[0];
+      if(id3.indexOf("&") != -1) id3 = id3.split("&")[0];
+      return id3;
+    }
+  }
+
+  if(url.indexOf("v=") != -1){
+    var parts4 = url.split("v=");
+    if(parts4[1]){
+      var id4 = parts4[1];
+      if(id4.indexOf("&") != -1) id4 = id4.split("&")[0];
+      if(id4.indexOf("?") != -1) id4 = id4.split("?")[0];
+      return id4;
+    }
+  }
+
+  return "";
+}
+
+function generateLinks(){
+  var input = document.getElementById("ytLink").value;
+  var id = extractVideoID(input);
+
+  if(id == "" || id.length < 8){
+    alert("الرابط غير صحيح! ضع رابط يوتيوب صحيح أو ضع ID الفيديو.");
+    return;
+  }
+
+  document.getElementById("result").style.display = "block";
+  document.getElementById("videoIdText").innerHTML = id;
+
+
+  document.getElementById("link1").href = "https://www.youtube.com/watch?v=" + id;
+  document.getElementById("link1").innerHTML = "فتح يوتيوب العادي";
+
+  document.getElementById("link2").href = "https://m.youtube.com/watch?v=" + id;
+  document.getElementById("link2").innerHTML = "فتح نسخة خفيفة (m.youtube)";
+
+  document.getElementById("link3").href = "http://m.youtube.com/watch?v=" + id;
+  document.getElementById("link3").innerHTML = "فتح نسخة خفيفة جدًا (HTTP)";
+
+  document.getElementById("link4").href = "https://www.youtube.com/embed/" + id;
+  document.getElementById("link4").innerHTML = "فتح مشغل Embed";
+
+  document.getElementById("link5").href = "vnd.youtube://" + id;
+  document.getElementById("link5").innerHTML = "فتح في تطبيق يوتيوب";
+
+  document.getElementById("playerFrame").src = "https://www.youtube.com/embed/" + id;
+}
+</script>
+
+</body>
+</html>
